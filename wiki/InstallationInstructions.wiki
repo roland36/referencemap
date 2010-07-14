@@ -13,7 +13,8 @@ You'll need the olmapwidget.1.0.tar.gz file and a copy of the [http://openlayers
          # cp !OpenLayers.js $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
          # cp -R img/ $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
          # cp -R theme/ $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
-     # Load your page http://yourserver.com[:port]/OLMapWidget/mapwidget.html
+     # Load your page.  For example: http://olmapwidget.appspot.com/OLMapWidget/mapwidget.html
+     # Using mapwidget.html as an example use the widget for your own purposes.
 
 = Using the widget in your own !GWT project. =
 
