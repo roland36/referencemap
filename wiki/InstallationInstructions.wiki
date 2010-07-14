@@ -1,0 +1,57 @@
+#summary How to install the map widget at your site.
+
+You can use the map widget as a black box, stand-alone piece of native !JavaScript along with your own !JavaScript.  You can also use the use the code as part of a GWT project as a pre-built library.  And finally you can grab the Java source, add it to your own GWT project and hack it up for your own use.
+
+
+= Using the widget with your own !JavaScript code. =
+
+You'll need the olmapwidget.1.0.tar.gz file and a copy of the [http://openlayers.org OpenLayers] !JavaScript code (we use OL 2.8 in our production servers, but works with 2.9).  To install:
+    # Extract the tar file somewhere in the document root of your Web server, ($TOMCAT_HOME/webapps/ROOT works just fine as a place to experiment).
+    # Add !OpenLayers to the !JavaScript/frameworks/!OpenLayers directory the stub of which appears after your extract the tar file.  For example, to install in you Tomcat root:
+         # tar -xvzf !OpenLayers-2.9.1.tar.gz
+         # cd !OpenLayers-2.9.1
+         # cp !OpenLayers.js $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
+         # cp -R img/ $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
+         # cp -R theme/ $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
+     # Load your page http://yourserver.com[:port]/OLMapWidget/mapwidget.html
+
+= Using the widget in your own !GWT project. =
+
+You'll need the olmapwidget.1.0.jar, olmapwidget_css_images.1.0.tar.gz and the gwtopenlayers.jar from this site.  The jar file has the map widget you can add to your own GWT widgets.  The gwtopenlayers.jar is the overlay of GWT on top of the !OpenLayers !JavaScript.  I built  gwtopenlayers.jar from the source code at GWT-OpenLayers.  It includes some bug fixes and additions which I contributed, but have not yet been "officially" packaged and released by the project.  I'm going to assume you have or will create a GWT project using the Eclipse plug-in. If not, your on your own.  Sorry.  To get going with GWT:
+    # Go to an existing GWT project or start a new one.
+    # Add olmapwidget.1.0.jar and gwtopenlayers.jar to your build path.
+    # Put the !JavaScript, css and images you need somewhere in your document hierarchy.  (You'll need to refer to the !JavaScript in the HTML page that loads you map widget as described in step 6).
+{{{
+cd $TOMCAT_HOME/webapps/ROOT
+tar -xzvf olmapwidget_css_images.1.0.tar.gz
+}}}
+    # Inherit the OLMapWidget and GWT-OpenLayers modules in your module definition.
+{{{
+  <inherits name="com.weathertopconsulting.olmapwidget.OLMapWidget"/>
+  <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
+}}}
+    # In the EntryPoint class or in some widget create a map and initialize the data extent and set the tool:
+            {{{
+import com.weathertopconsulting.olmapwidget.client.map.OLMapWidget;
+public class MapExample implements EntryPoint {
+    OLMapWidget mapWidget = new OLMapWidget();
+    	public void onModuleLoad() {
+
+		mapWidget.setDataExtent(-90, 90, -180, 180, 1);
+		mapWidget.setTool("xy");
+                RootPanel.get().add(mapWidget);
+        }
+}
+            }}}
+    # Reference all the underlying !JavaScript and css in the HTML page that loads your entry point class.
+{{{
+    <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayers/OpenLayers.js"></script>
+    <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayersExtensions/DrawSingleFeature.js"></script>
+    <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayersExtensions/HorizontalPath.js"></script>
+    <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayersExtensions/VerticalPath.js"></script>
+}}}
+    # Either debug in hosted mode or compile and deploy your GWT code with the map widget included.
+
+= Build the map widget from source and modify it for fun and profit. =
+
+The source code for my part of the map widget (not the GWT-OpenLayers integration) is hosted in the Google code project.  The process to get going is essentially the same as what is described above for using the binary distribution, but instead of including the olmapwidget.1.0.jar in your build path, you'll have the source you pulled from this site.
