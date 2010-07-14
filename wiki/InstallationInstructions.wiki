@@ -16,7 +16,7 @@ You'll need the olmapwidget.1.0.tar.gz file and a copy of the [http://openlayers
      # Load your page.  For example: http://olmapwidget.appspot.com/OLMapWidget/mapwidget.html
      # Using mapwidget.html as an example use the widget for your own purposes.
 
-= Using the widget in your own !GWT project. =
+= Using the widget in your own GWT project. =
 
 You'll need the olmapwidget.1.0.jar, olmapwidget_css_images.1.0.tar.gz and the gwtopenlayers-192.jar (192 is the Mercurial change set for the snapshot of the code in this jar) from this site.  The jar file has the map widget you can add to your own GWT widgets.  The gwtopenlayers-192.jar is the overlay of GWT on top of the !OpenLayers !JavaScript.  I built  gwtopenlayers-192.jar from the source code at GWT-OpenLayers.  It includes some bug fixes and additions which I contributed, but have not yet been "officially" packaged and released by the project.  I'm going to assume you have or will create a GWT project using the Eclipse plug-in. If not, your on your own.  Sorry.  To get going with GWT:
     # Go to an existing GWT project or start a new one.
@@ -51,7 +51,7 @@ public class MapExample implements EntryPoint {
     <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayersExtensions/HorizontalPath.js"></script>
     <script type="text/javascript" language="javascript" src="JavaScript/frameworks/OpenLayersExtensions/VerticalPath.js"></script>
 }}}
-    # Either debug in hosted mode or compile and deploy your GWT code with the map widget included.
+    # Either debug in hosted mode or compile and deploy your GWT code with the map widget included.  A GWT version of the widget is here: http://olmapwidget.appspot.com/MapExample.html.  (Note: there are no event listeners for the moves and features being added like in the native JavaScript version.  I didn't need them in my GWT project.  I might add them later.)
 
 = Build the map widget from source and modify it for fun and profit. =
 
