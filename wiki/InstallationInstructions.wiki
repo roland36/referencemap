@@ -5,10 +5,10 @@ You can use the map widget as a black box, stand-alone piece of native !JavaScri
 
 = Using the widget with your own !JavaScript code. =
 
-You'll need the olmapwidget.1.0.tar.gz file and a copy of the [http://openlayers.org OpenLayers] !JavaScript code (we use OL 2.8 in our production servers, but works with 2.9).  To install:
+You'll need the olmapwidget.1.1.tar.gz file and a copy of the [http://openlayers.org OpenLayers] !JavaScript code (we use OL 2.10).  To install:
     # Extract the tar file somewhere in the document root of your Web server, ($TOMCAT_HOME/webapps/ROOT works just fine as a place to experiment).
     # Add !OpenLayers to the !JavaScript/frameworks/!OpenLayers directory the stub of which appears after your extract the tar file.  For example, to install in you Tomcat root:
-         # tar -xvzf !OpenLayers-2.9.1.tar.gz
+         # tar -xvzf !OpenLayers-2.10.tar.gz
          # cd !OpenLayers-2.9.1
          # cp !OpenLayers.js $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
          # cp -R img/ $TOMCAT_HOME/webapps/ROOT/!JavaScript/frameworks/!OpenLayers/.
@@ -18,13 +18,13 @@ You'll need the olmapwidget.1.0.tar.gz file and a copy of the [http://openlayers
 
 = Using the widget in your own GWT project. =
 
-You'll need the olmapwidget.1.0.jar, olmapwidget_css_images.1.0.tar.gz and the gwtopenlayers-192.jar (192 is the Mercurial change set for the snapshot of the code in this jar) from this site.  The jar file has the map widget you can add to your own GWT widgets.  The gwtopenlayers-192.jar is the overlay of GWT on top of the !OpenLayers !JavaScript.  I built  gwtopenlayers-192.jar from the source code at GWT-OpenLayers.  It includes some bug fixes and additions which I contributed, but have not yet been "officially" packaged and released by the project.  I'm going to assume you have or will create a GWT project using the Eclipse plug-in. If not, your on your own.  Sorry.  To get going with GWT:
+You'll need the olmapwidget.1.1.jar, olmapwidget_css_images.1.1.tar.gz and the gwt-openlayers-client-0.5.jar. The jar file has the map widget you can add to your own GWT widgets.  I'm going to assume you have or will create a GWT project using the Eclipse plug-in. If not, your on your own.  Sorry.  To get going with GWT:
     # Go to an existing GWT project or start a new one.
-    # Add olmapwidget.1.0.jar and gwtopenlayers-192.jar to your build path.
+    # Add olmapwidget.1.1.jar and gwt-openlayers-client-0.5.jar to your build path.
     # Put the !JavaScript, css and images you need somewhere in your document hierarchy.  (You'll need to refer to the !JavaScript in the HTML page that loads you map widget as described in step 6).
 {{{
 cd $TOMCAT_HOME/webapps/ROOT
-tar -xzvf olmapwidget_css_images.1.0.tar.gz
+tar -xzvf olmapwidget_css_images.1.1.tar.gz
 }}}
     # Inherit the OLMapWidget and GWT-OpenLayers modules in your module definition.
 {{{
@@ -55,4 +55,4 @@ public class MapExample implements EntryPoint {
 
 = Build the map widget from source and modify it for fun and profit. =
 
-The source code for my part of the map widget (not the GWT-OpenLayers integration) is hosted in the Google code project.  The process to get going is essentially the same as what is described above for using the binary distribution, but instead of including the olmapwidget.1.0.jar in your build path, you'll have the source you pulled from this site.
+The source code for my part of the map widget (not the GWT-OpenLayers integration) is hosted in the Google code project.  The process to get going is essentially the same as what is described above for using the binary distribution, but instead of including the olmapwidget.1.1.jar in your build path, you'll have the source you pulled from this site.
