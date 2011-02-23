@@ -1,7 +1,7 @@
 /**
  * This software was developed by Roland Schweitzer of Weathertop Consulting, LLC 
  * (http://www.weathertopconsulting.com/) as part of work performed for
- * NOAA Contracts AB113R-04-RP-0068 and AB113R-09-CN-0182.  
+ * NOAA Contracts AB113R-04-RP-0068 and AB133R-09-CN-0182.  
  * 
  * The NOAA licensing terms are explained below.
  * 
@@ -21,6 +21,7 @@ import com.weathertopconsulting.olmapwidget.client.openlayers.DrawSingleFeatureO
 import com.weathertopconsulting.olmapwidget.client.openlayers.HorizontalPathHandler;
 import com.weathertopconsulting.olmapwidget.client.openlayers.VerticalPathHandler;
 import com.weathertopconsulting.olmapwidget.client.openlayers.DrawSingleFeature.FeatureAddedListener;
+import com.weathertopconsulting.olmapwidget.client.serializable.RegionSerializable;
 
 import org.gwtopenmaps.openlayers.client.Bounds;
 import org.gwtopenmaps.openlayers.client.LonLat;
@@ -53,12 +54,16 @@ import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 import org.gwtopenmaps.openlayers.client.marker.Box;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -66,7 +71,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class OLMapWidget extends Composite {
@@ -135,7 +139,7 @@ public class OLMapWidget extends Composite {
 	
 	private HorizontalPanel buttonPanel;
 	private PopupPanel regionPanel;
-	private VerticalPanel regionInterior;
+	private FlowPanel regionInterior;
 	private Image regionOpenUp;
 	private Image regionOpenDown;
 	private ToggleButton regionButton;
@@ -143,7 +147,7 @@ public class OLMapWidget extends Composite {
 	private Image regionCloseDown;
 	private PushButton regionClose;
 	private PopupPanel helpPanel;
-	private VerticalPanel helpInterior;
+	private FlowPanel helpInterior;
 	private Image helpCloseUp;
 	private Image helpCloseDown;
 	private PushButton helpClose;
@@ -155,9 +159,6 @@ public class OLMapWidget extends Composite {
 	
     Boxes boxes = new Boxes("Valid Region");
 	Box box = null;
-	//public static final String WMS_URL = "http://strider.weathertopconsulting.com:8282/geoserver/wms?";
-    public static final String WMS_URL = "http://labs.metacarta.com/wms/vmap0";
-    
     double delta;
     
     boolean editing = false;
@@ -168,15 +169,20 @@ public class OLMapWidget extends Composite {
     private Attribution attribControl;
     
     private MapSelectionChangeListener mapListener;
-    
+    // public static final String WMS_URL = "http://strider.weathertopconsulting.com:8282/geoserver/wms?";
+    // public static final String WMS_URL = "http://labs.metacarta.com/wms/vmap0";
+    private final static String WMS_URL = "http://vmap0.tiles.osgeo.org/wms/vmap0";
     public OLMapWidget() {
-    	init("128px", "256px");
+    	init("128px", "256px", WMS_URL);
     }
     
 	public OLMapWidget(String height, String width) {
-		init(height, width);
+		init(height, width, WMS_URL);
 	}
-	private void init(String height, String width) {
+	public OLMapWidget(String height, String width, String tile_url) {
+		init(height, width, tile_url);
+	}
+	private void init(String height, String width, String tile_url) {
 		regionWidget.setChangeListener(regionChangeListener);
 		textWidget.addSouthChangeListener(southChangeListener);
 		textWidget.addNorthChangeListener(northChangeListener);
@@ -188,7 +194,7 @@ public class OLMapWidget extends Composite {
 		
 		dockPanel = new DockPanel();
 		helpPanel = new PopupPanel();
-		helpInterior = new VerticalPanel();
+		helpInterior = new FlowPanel();
 	    buttonPanel = new HorizontalPanel();
 
 		helpButtonUp = new Image(GWT.getModuleBaseURL()+"../images/info_off.png");
@@ -234,7 +240,7 @@ public class OLMapWidget extends Composite {
 		regionClose.addStyleName("OL_MAP-CloseButton");
 		
 		regionPanel = new PopupPanel();
-		regionInterior = new VerticalPanel();
+		regionInterior = new FlowPanel();
 		regionInterior.add(regionClose);
 		regionInterior.add(regionWidget); 
 		regionPanel.add(regionInterior);
@@ -388,9 +394,12 @@ public class OLMapWidget extends Composite {
         WMSOptions wmsOptions = new WMSOptions();
         wmsOptions.setWrapDateLine(true);
         wmsOptions.setIsBaseLayer(false);
+        if ( tile_url == null || tile_url.equals("") || !tile_url.startsWith("http://")) {
+        	tile_url = WMS_URL;
+        }
 		wmsLayer = new WMS(
 				"Basic WMS",
-				WMS_URL,
+				tile_url,
 				wmsParams,
 				wmsOptions);
 		
@@ -519,6 +528,32 @@ public class OLMapWidget extends Composite {
 	public Map getMap() {
 		return map;
 	}
+	public void setTileServer(String url) {
+		if ( wmsLayer != null ) {
+			map.removeLayer(wmsLayer);
+		}
+		WMSParams wmsParams = new WMSParams();
+		wmsParams.setFormat("image/png");
+		wmsParams.setLayers("basic");
+        WMSOptions wmsOptions = new WMSOptions();
+        wmsOptions.setWrapDateLine(true);
+        wmsOptions.setIsBaseLayer(false);
+        if ( url == null || url.equals("") || !url.startsWith("http://")) {
+        	url = WMS_URL;
+        }
+		wmsLayer = new WMS(
+				"Basic WMS",
+				url,
+				wmsParams,
+				wmsOptions);
+		map.addLayer(wmsLayer);
+	}
+	public void resizeMap() {
+		// Do a meaningless little calculation to force the map to re-calibrate where it is on the page.
+		int zoom = map.getZoom();
+		LonLat center = map.getCenter();
+		map.setCenter(center, zoom);
+	}
 	public void setDataExtent(double slat, double nlat, double wlon, double elon, double delta) {
 		this.delta = delta;
 		dataBounds = new Bounds(wlon, slat, elon, nlat);
@@ -571,8 +606,8 @@ public class OLMapWidget extends Composite {
 			boxes.addMarker(box);
 			map.addLayer(boxes);
 		}
-		mapOptions = new MapOptions();
-		map.setOptions(mapOptions);		
+//		mapOptions = new MapOptions();
+//		map.setOptions(mapOptions);		
 		trimSelection(dataBounds);
 		LonLat center = dataBounds.getCenterLonLat();
 		// The selected region cannot not be centered exactly.
@@ -1298,10 +1333,6 @@ public class OLMapWidget extends Composite {
 		    }
 		}
 	};
-
-	public void render() {
-		map.render();
-	}
 	public double[] getDataExtent() {
 		double[] d = new double[4];
 		// s, n, w, e to match setDataExtent...
@@ -1337,6 +1368,31 @@ public class OLMapWidget extends Composite {
 		LonLat c = new LonLat(lon, lat);
 		map.setCenter(c, zoom);
 	}
+	public void setRegions(RegionSerializable[] regions) {
+		regionWidget.setRegions(regions);
+	}
+	public void setNamedRegions(JavaScriptObject r) {
+		JSONObject rj = new JSONObject(r);
+		JSONObject rs = rj.get("regions").isObject();
+		if ( rs != null ) {
+			JSONArray regions = rs.get("region").isArray();
+			if ( regions != null ) {
+				RegionSerializable[] wire_regions = new RegionSerializable[regions.size()];
+				for (int i = 0; i < regions.size(); i++) {
+					JSONObject region = regions.get(i).isObject();
+					if ( region != null ) {
+						wire_regions[i] = new RegionSerializable();
+						wire_regions[i].setName(region.get("name").isString().stringValue());
+						wire_regions[i].setWestLon(Double.valueOf(region.get("xlo").isString().stringValue()));
+						wire_regions[i].setEastLon(Double.valueOf(region.get("xhi").isString().stringValue()));
+						wire_regions[i].setSouthLat(Double.valueOf(region.get("ylo").isString().stringValue()));
+						wire_regions[i].setNorthLat(Double.valueOf(region.get("yhi").isString().stringValue()));
+					}
+				}
+				regionWidget.setRegions(wire_regions);
+			}
+		}
+	}
 	public boolean isEditing() {
 		return editing;
 	}
@@ -1361,13 +1417,27 @@ public class OLMapWidget extends Composite {
     		$wnd.mapMovedCallback();
     	}
     }-*/;
+    public static native void mapDone()/*-{
+    	if ( typeof $wnd.mapDoneCallback == 'function') {
+    		$wnd.mapDoneCallback();
+    	}
+    }-*/;
 	public native void activateNativeHooks()/*-{
 		var localMap = this;
+		$wnd.setWMSTileServer = function(wms_url) {
+			localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::setTileServer(Ljava/lang/String;)(wms_url);
+		}
+		$wnd.mapResize = function() {
+			localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::resizeMap()();
+		}
         $wnd.setMapCurrentSelection = function(slat, nlat, wlon, elon) {       	
 	        localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::setCurrentSelection(DDDD)(slat, nlat, wlon, elon);
-        } 
+        }
         $wnd.setMapTool = function(tool) {
         	localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::setTool(Ljava/lang/String;)(tool);
+        }
+        $wnd.setMapRegions = function(regions) {
+        	localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::setNamedRegions(Lcom/google/gwt/core/client/JavaScriptObject;)(regions);
         }
         $wnd.setMapDataExtent = function(slat, nlat, wlon, elon, delta) {
         	localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::setDataExtent(DDDDD)(slat, nlat, wlon, elon, delta);
@@ -1403,5 +1473,4 @@ public class OLMapWidget extends Composite {
         	localMap.@com.weathertopconsulting.olmapwidget.client.map.OLMapWidget::panMapToSelection()();
         }
     }-*/;
-	
 }
