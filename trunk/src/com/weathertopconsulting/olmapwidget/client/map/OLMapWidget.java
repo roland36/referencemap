@@ -1,7 +1,7 @@
 /**
  * This software was developed by Roland Schweitzer of Weathertop Consulting, LLC 
  * (http://www.weathertopconsulting.com/) as part of work performed for
- * NOAA Contracts AB113R-04-RP-0068 and AB133R-09-CN-0182.  
+ * NOAA Contracts AB113R-04-RP-0068 and AB113R-09-CN-0182.  
  * 
  * The NOAA licensing terms are explained below.
  * 
@@ -599,12 +599,19 @@ public class OLMapWidget extends Composite {
 	public void zoomMap() {	
 		int zoom = map.getZoomForExtent(dataBounds, false);
 		if ( box != null ) {
-		    boxes.removeMarker(box);
+			try {
+				boxes.destroy();
+			} catch (Exception e) {
+				// Ok.  If the marker has not be set this is throwing an NPE.  Give me a break.
+			}
 		}
 		if ( !modulo ) {
+			//map.removeLayer(boxes);
+			boxes = new Boxes("Valid Region");
+			map.addLayer(boxes);
 			box = new Box(dataBounds);
 			boxes.addMarker(box);
-			map.addLayer(boxes);
+			
 		}
 //		mapOptions = new MapOptions();
 //		map.setOptions(mapOptions);		
