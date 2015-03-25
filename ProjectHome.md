@@ -1,0 +1,11 @@
+The latest download and source changes fix an annoying bug that surface with OpenLayers 2.10.  When the valid region was marked with the red rectangle that rectangle stayed on the map forever.  Sorry that bug slipped through, but it's now fixed.
+
+The ReferenceMap OLMapWidget is now running with OpenLayers 2.10 and is using the default gwt-openlayers jar file.  There are a couple of new methods you can call from your native JavaScript deployments to set the base map and to reinitialize the map if the <div> that contains the map is moving on the page.<br>
+<br>
+The ReferenceMap project is a OpenLayers map widget that can be used both as a stand-alone JavaScript map widget and as a GWT class.  It allows a click, hold and drag, selection of latitude/longitude rectangles, latitude lines, longitude lines and points while displaying an overlay on the map showing the selected area. The lines and rectangles can be selected and edited by moving the circular handles. The map includes text widgets which display the N and S latitude, and E and W longitude of the current selection and allow for user entry of values to edit the selection. The selections can be limited to a sub-region.  The map includes a reset button to zoom to the current valid data region, a menu selector for named regions.  All of the map functions are provided <a href='http://openlayers.org'>by OpenLayers</a> and the integration with GWT is from the <a href='http://sourceforge.net/projects/gwt-openlayers/'>GWT-OpenLayers project</a>.<br>
+<br>
+We use it in the <a href='http://ferret.pmel.noaa.gov/NVODS/'>National Virtual Ocean Data Server</a> and as a part of the <a href='http://ferret.pmel.noaa.gov/LAS'>Live Access Server</a> (an open source tool for web-based display and analysis of earth science data).<br>
+<br>
+See the <a href='http://code.google.com/p/referencemap/wiki/InstallationInstructions'>installation instructions</a> for how to get started. <a href='http://olmapwidget.appspot.com/OLMapWidget/mapwidget.html'>Here is a simple example of the widget used with native JavaScript</a> and <a href='http://olmapwidget.appspot.com/MapExample.html'>the map in a simple GWT project</a>.<br>
+<br>
+<a href='http://olmapwidget.appspot.com/RefMapTutorial.swf'>Watch this Flash video to listen to me drone on about how to use the map and see it in action</a> on our NVODS server.
